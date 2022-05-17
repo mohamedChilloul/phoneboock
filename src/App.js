@@ -6,9 +6,16 @@ const App= ()=> {
   
   const handleAdd = (event)=>{
     event.preventDefault()
-    let newPerson = {name : name}
-    setPersons(persons.concat(newPerson))
-    setName('')
+    let names =persons.map((p)=>p.name) 
+    let exist = names.indexOf(name)
+    if (exist === -1){
+      let newPerson = {name : name}
+      setPersons(persons.concat(newPerson))
+      setName('')
+    }else{
+      alert(`${name} is already added to the phoneboock `)
+    }
+    
   }
   const nameChange = (event)=>{
     setName(event.target.value)
