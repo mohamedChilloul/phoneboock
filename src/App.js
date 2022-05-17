@@ -1,5 +1,37 @@
 import { useState } from 'react'
 
+const Filter = ({search, searchChange})=>{
+  return(
+    <div>
+      <label>filter Shown whith </label>
+      <input value={search} onChange={searchChange}></input>
+  </div>
+  )
+}
+
+const PersonForm = (props)=>{
+  return(
+    <form onSubmit={props.handleAdd}>
+        <div>
+          <label>name : </label>
+          <input type='text' onChange={props.nameChange} value={props.name}></input>
+        </div>
+        <div>
+          <label>number : </label>
+          <input type='text' onChange={props.numberChange} value={props.number}></input>
+        </div>
+        <div>
+          <button type='submit'>add</button>
+        </div>
+      </form>
+  )
+}
+const Persons = ({persons})=>{
+  return(
+      persons.map((person)=><div key={person.name}>{person.name} {person.number}</div>)
+  )
+}
+
 const App= ()=> {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -39,28 +71,11 @@ const App= ()=> {
   return (
     <div>
       <h2>Phoneboock</h2>
-      <div>
-        <label>filter Shown whith </label>
-        <input value={search} onChange={searchChange}></input>
-      </div>
+      <Filter search={search} searchChange={searchChange}></Filter>
       <h2>add a new</h2>
-      <form onSubmit={handleAdd}>
-        <div>
-          <label>name : </label>
-          <input type='text' onChange={nameChange} value={name}></input>
-        </div>
-        <div>
-          <label>number : </label>
-          <input type='text' onChange={numberChange} value={number}></input>
-        </div>
-        <div>
-          <button type='submit'>add</button>
-        </div>
-      </form>
+      <PersonForm handleAdd={handleAdd}name={name}number={number}nameChange={nameChange}numberChange={numberChange}></PersonForm>
       <h2>Numbers</h2>
-      {
-        filtredList.map((person)=><div key={person.id}>{person.name} {person.number}</div>)
-      }
+      <Persons persons={filtredList}></Persons>
     </div>
   );
 }
