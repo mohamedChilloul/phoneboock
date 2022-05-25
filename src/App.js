@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from "axios"
-
+//import axios from "axios"
+import personService from './services/persons'
 const Filter = ({search, searchChange})=>{
   return(
     <div>
@@ -27,9 +27,12 @@ const PersonForm = (props)=>{
       </form>
   )
 }
-const Persons = ({persons})=>{
+const Persons = ({persons, handleDelete})=>{
   return(
-      persons.map((person)=><div key={person.name}>{person.name} {person.number}</div>)
+      persons.map((person)=>
+        <div key={person.name}>
+          {person.name} {person.number} <button onClick={()=>handleDelete(person.id)}>delete</button>
+        </div>)
   )
 }
 
@@ -45,9 +48,13 @@ const App= ()=> {
     let exist = names.indexOf(name)
     if (exist === -1){
       let newPerson = {name : name, number:number}
-      setPersons(persons.concat(newPerson))
-      setName('')
-      setNumber('')
+     
+      //adding the new person to the json-server
+      personService.addPerson(newPerson).then(res=>{
+        setPersons(persons.concat(res))
+        setName('')
+        setNumber('')
+      })
     }else{
       alert(`${name} is already added to the phoneboock `)
     }
@@ -62,14 +69,21 @@ const App= ()=> {
   const searchChange=(event)=>{
     setSearch(event.target.value)
   }
+
+  const handleDelete = (id)=>{
+    //console.log('delete ', id)
+    let deletedPers = persons.find(p=>p.id === id)
+    if(window.confirm(`do you realy want to delete ${deletedPers.name} from the phoneBoock ?`)){
+      personService.deletePerson(id).then(res=>{
+      setPersons(persons.filter(p =>p.id!=id))
+      })
+    }
+  }
   const filtredList = persons.filter((p)=>p.name.toLocaleLowerCase().match(search.toLocaleLowerCase()))
   //console.log(filtredList)
 
   useEffect(()=>{
-    axios.get('http://localhost:3001/persons').then(res=>{
-      //console.log(res)
-      setPersons(res.data)
-    })
+    personService.getAll().then(res =>setPersons(res))
   },[])
   return (
     <div>
@@ -78,7 +92,7 @@ const App= ()=> {
       <h2>add a new</h2>
       <PersonForm handleAdd={handleAdd}name={name}number={number}nameChange={nameChange}numberChange={numberChange}></PersonForm>
       <h2>Numbers</h2>
-      <Persons persons={filtredList}></Persons>
+      <Persons persons={filtredList}handleDelete={handleDelete}></Persons>
     </div>
   );
 }
