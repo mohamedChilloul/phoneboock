@@ -56,7 +56,15 @@ const App= ()=> {
         setNumber('')
       })
     }else{
-      alert(`${name} is already added to the phoneboock `)
+      if(window.confirm(`${name} already added to phoneBoock , do you want to replace the his number?`)){
+        let exitedPers = persons.find(p =>p.name === name)
+        let newPerson = {...exitedPers, number:number}
+        personService.updatePerson(newPerson.id,newPerson).then(res =>{
+          setPersons(persons.map(p=>p.id!=newPerson.id ? p : res))
+          setName('')
+          setNumber('')
+        })
+      }
     }
     
   }
